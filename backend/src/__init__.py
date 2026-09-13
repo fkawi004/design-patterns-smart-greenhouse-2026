@@ -1,0 +1,2 @@
+"""Smart greenhouse backend package."""
+
