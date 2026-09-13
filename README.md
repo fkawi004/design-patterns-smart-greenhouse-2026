@@ -1,4 +1,4 @@
-# Smart Greenhouse — Design Patterns 2026
+# Smart Greenhouse — Design Patterns
 
 A runnable three-tier course project with a FastAPI backend, PostgreSQL migrations, and a React + TypeScript dashboard shell.
 
@@ -72,4 +72,3 @@ npm run build
 ```
 
 See [the phase order](docs/phases/README.md) and [Phase 1 answers](docs/phases/phase-01/questions.md).
-
