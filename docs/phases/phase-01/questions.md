@@ -1,55 +1,21 @@
-# Phase 1 — Skeleton answers
+Phase 1 answers
 
-## A. Pattern
+1. A design pattern is a common solution or idea that can help solve a problem in software design. It is not ready-made code that can just be copied into every project. It should only be used when it actually fits the problem.
 
-### 1. What is a design pattern, and what is it not?
+2. The three GoF pattern families are creational, structural and behavioural. Creational patterns are about how objects are created. Structural patterns are about how different parts of a program are connected. Behavioural patterns are about how objects communicate and share responsibilities. Factory Method is a creational pattern and Strategy is a behavioural pattern.
 
-A design pattern is a reusable way of thinking about a recurring software-design problem. It describes roles, relationships, and trade-offs that can be adapted to a particular application. It is not finished code, a library, or a rule that must be used whenever its name appears in a course plan.
+3. A pattern should be skipped when the feature is simple and probably will not need different versions later. Adding a pattern too early can make the code harder to understand because it creates extra classes and files without giving a real benefit.
 
-### 2. GoF pattern families
+4. Phase 1 has very little greenhouse logic because its purpose is to make sure the basic parts of the project work together. It proves that the database starts, migrations work, the backend can connect to the database and the frontend can call the backend. Empty classes and folders would not prove that the whole application can actually run.
 
-- **Creational patterns** address how objects are created while keeping callers independent of concrete construction details. Factory Method belongs here.
-- **Structural patterns** address how classes and objects are combined into larger structures without making those structures rigid.
-- **Behavioural patterns** address how objects divide responsibilities and communicate while carrying out behaviour. Strategy belongs here.
+5. The domain layer will contain greenhouse business rules and objects. The application layer will contain the use cases of the program. The infrastructure layer handles technical things such as settings and database connections. The interfaces/api layer contains the FastAPI routes and HTTP responses. The domain layer should not contain FastAPI routes, database connection code or HTTP response models.
 
-### 3. When should a pattern be skipped?
+6. GET /health returns the status of the API and database. When everything works, it returns status ok and db ok. If the database connection fails, it returns status degraded and db fail. The database is checked because the backend is not fully useful if the process is running but cannot reach its data. Scalar is used at /scalar as the API documentation page. Swagger at /docs is disabled because Scalar is the documentation tool selected for this course.
 
-I should skip a pattern when there is no recurring design pressure for it: for example, when a feature is small, stable, and has only one straightforward implementation. Applying a pattern too early creates extra abstractions, files, and indirection whose cost is real while the predicted flexibility may never be needed. It can also make later changes harder because the code is shaped around a guessed requirement.
+7. Alembic is added before any business tables so that database changes are managed correctly from the beginning. The empty baseline proves that the migration system can connect to PostgreSQL and keep track of database versions. If tables were created manually first, different developers could have different database structures and later migrations might fail because they would not know what had already been created.
 
-## B. This phase of the application
+8. Dependencies should point toward the inner layers. The domain should not depend on the other layers. The application layer can use the domain, while the API and infrastructure layers can use the inner layers. The domain should not import FastAPI, SQLAlchemy or HTTP Pydantic models because business rules should still work without a web framework or database library.
 
-### 4. Why ship an almost empty vertical slice?
+9. First I would check that PostgreSQL is running and healthy. Then I would open /health and check that it returns the expected status and db fields. After that I would check the frontend API URL, the browser request and the CORS settings. This is a Phase 1 problem because it is about getting the three parts of the application connected, not about design patterns.
 
-The slice proves that the actual boundaries connect end to end: PostgreSQL starts, Alembic reaches it, FastAPI checks it, CORS lets the React client call the API, and the UI renders the result. Empty classes would only prove that names and folders exist. “Empty but running” exposes configuration, dependency, networking, and startup mistakes before business logic hides them.
-
-### 5. Backend layers
-
-- `domain` will contain greenhouse business concepts and rules, with no framework dependencies.
-- `application` will coordinate use cases and work through domain-facing abstractions.
-- `infrastructure` owns technical adapters such as settings, the SQLAlchemy engine, database sessions, and persistence implementations.
-- `interfaces/api` translates HTTP requests and responses and defines FastAPI routes.
-
-The domain must not contain FastAPI routes, SQLAlchemy engine/session setup, environment-variable parsing, or HTTP response schemas. In this phase it intentionally contains no entities at all.
-
-### 6. Health endpoint and API documentation
-
-`GET /health` returns `{ "status": "ok", "db": "ok" }` when the API can execute `SELECT 1`; if that check fails it returns `status: "degraded"` and `db: "fail"`. Checking only the process could report a healthy service that cannot perform database-backed work. Scalar is the course-standard human-readable view of the generated OpenAPI contract at `/scalar`; `/docs` is disabled so there is one intentional documentation UI rather than both Scalar and Swagger.
-
-### 7. Why start with an empty Alembic baseline?
-
-The baseline proves that every environment can reach the same database and advance schema state in a repeatable, versioned way before product tables exist. If tables were created manually first, their history would not be reproducible: developers and deployments could have different shapes, migrations might collide with existing objects, and nobody could reliably rebuild or roll forward a clean database.
-
-## C. Compare, contrast, and scenarios
-
-### 8. Dependency direction
-
-Dependencies point inward. `domain` depends on ordinary Python only; `application` may depend on domain concepts; infrastructure and API adapters may depend on the inner layers and on their own frameworks; the composition root wires the adapters together. Domain code must not import FastAPI, SQLAlchemy, or HTTP Pydantic schemas because business rules should remain usable and testable without a web server, database library, or transport format.
-
-### 9. Diagnosing a missing healthy badge
-
-First I would verify the stack from the bottom up: the PostgreSQL container is healthy, `/health` returns the exact expected JSON, the browser is calling the correct API base URL, and the backend allows the Vite origin through CORS. I would then inspect the browser request and frontend parsing. These are Phase 1 integration concerns because they test whether the three tiers communicate at all; no design pattern can repair a stopped service, wrong URL, blocked cross-origin request, or mismatched contract.
-
-### 10. What remains after Phase 1?
-
-The skeleton has no greenhouse business entities, product tables, sensor endpoints, device creation, control behaviour, automation rules, events, or the later course patterns. Later phases add those pieces inside the existing seams: migrations extend PostgreSQL, domain and application packages gain rules and use cases, infrastructure implements persistence, API routes expose them, and the stable dashboard sections are filled in. The startup, configuration, migration, documentation, and client foundations do not need to be rewritten.
-
+10. After Phase 1, the project still does not have devices, sensors, greenhouse data, controls, automation, events or the later design patterns. Future phases can add these features to the existing layers and dashboard sections. The basic database, backend, frontend and migration setup should not need to be rebuilt.
