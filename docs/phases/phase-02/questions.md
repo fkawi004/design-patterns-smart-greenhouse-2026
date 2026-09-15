@@ -41,21 +41,21 @@
 > [!NOTE]
 > ***Your Answer***
 >
-> The product is `Sensor`, and the concrete creators are `MoistureSensorCreator` and `LightSensorCreator`. The API goes through the service and registry so it does not need to know the defaults or construction rules for every sensor type.
+> The product is Sensor, and the concrete creators are MoistureSensorCreator and LightSensorCreator. The API goes through the service and registry so it does not need to know the defaults or construction rules for every sensor type.
 
 5. `POST /api/sensors` accepts a short `type` key such as `"moisture"` or `"light"`, while the stored/returned field is `device_type` (for example `moisture_sensor`). Why are those two fields different? Who decides the stored `device_type` and `default_config`?
 
 > [!NOTE]
 > ***Your Answer***
 >
-> `type` is a simple input key used to find the right creator. `device_type` is the stable value used by the domain and database. The selected concrete creator decides the stored `device_type` and `default_config`.
+> Type is a simple input key used to find the right creator. Device type is the stable value used by the application and database. The selected concrete creator decides the stored device type and default configuration.
 
 6. Why is there a single `devices` table with `role="sensor"` instead of a dedicated `sensors` table? What later phase does that choice prepare for?
 
 > [!NOTE]
 > ***Your Answer***
 >
-> Sensors share common device fields, so one `devices` table avoids separate tables with repeated columns. The `role` identifies these rows as sensors and prepares the same table for actuators and device families in Phase 3.
+> Sensors share common device fields, so one devices table avoids separate tables with repeated columns. The role identifies these rows as sensors and prepares the same table for actuators and device families in Phase 3.
 
 7. What should happen when the client posts an **unknown** `type`? Where should that rejection be decided (registry/service vs router constructing a concrete class anyway)?
 
